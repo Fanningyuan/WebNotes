@@ -129,3 +129,133 @@ var age = 18;
 one()//18  (非严格模式下)
 ```
 
+### this指向实例
+
+#### 全局环境中
+
+在全局执行环境中，this都是指向全局对象。在浏览器中，window对象即是全局对象；
+
+```js
+console.log(this)// window
+var a = 1;
+console.log(window.a); // 1
+this.b = 3;
+console.log(b); // 3
+console.log(window.b); // 3
+```
+
+#### 在函数环境中
+
+在函数内容中，this指向取决于函数调用的方式
+
+```js
+function f() {
+	'use strict';
+	console.log(this);
+}
+f(); // window; 使用严格模式时，输出undefined
+```
+
+##### this指向如何发生变化
+
+1. 一般想到的是call和apply方法：将一个对象作为call或者apply的第一个参数，this将会被绑定到这个参数对象上
+
+```js
+var obj = {
+	parent : '男'
+};
+var parent = '28';
+function child(obj) {
+    console.log(this.parent)
+}
+
+child(); // 28
+child.call(obj); // 男
+child.apply(obj); //男
+```
+
+2. bind方法，调用f.bind(someObject)会创建一个与f具有相同函数体和作用域的函数，但是在这个新函数中，this将会永久地被绑定到了bind的第一个参数，不管函数是怎样调用的。
+
+```js
+function f() {
+    return this.a;
+}
+var g = f.bind({a:'js'});
+console.log(g()); // js
+
+var h = g.bind({a:'html'}); // this已经被绑定this的第一个参数，不会重复绑定，输出的值还是js
+console.log(h()); // js
+
+var o = {
+    a:css,
+    f:f,
+    g:g,
+    h:h
+}
+console.log(o.f(), o.g(), o.h());// css js js
+```
+
+3. 作为对象的方法调用时
+
+当函数作为对象的方法被调用时，this指向调用的该函数的对象：
+
+```js
+var obj = {
+  a: 37,
+  fn: function() {
+    return this.a;
+  }
+};
+console.log(obj.fn());  // 37
+```
+
+请注意，这样的行为，根本不受函数定义方式或位置的影响。在前面的例子中，我们在定义对象`obj`的同时，将函数内联定义为成员 `fn`。但是，我们也可以先定义函数，然后再将其附属到`obj.fn`。这样做会导致相同的行为：
+
+```js
+var obj = {a: 47};
+function independent() {
+  return this.a;
+}
+obj.fn = independent;
+console.log(obj);  //{a:47,fn:f}
+console.log(obj.fn()); //  47
+```
+
+对于在对象原型链上某处定义的方法，`this`指向的是调用这个方法的对象，就像该方法在对象上一样
+
+```js
+var o = {
+  f: function() { 
+    return this.a + this.b; 
+  }
+};
+var p = Object.create(o);
+p.a = 1;
+p.b = 4;
+console.log(p.f()); // 5
+```
+
+在这个例子中，对象`p`没有属于它自己的`f`属性，它的f属性继承自它的原型。虽然在对 `f` 的查找过程中，最终是在 `o` 中找到 `f` 属性的，这并没有关系；查找过程首先从 `p.f` 的引用开始，所以函数中的 `this` 指向`p`。也就是说，因为`f`是作为`p`的方法调用的，所以它的`this`指向了`p`。
+
+4. 作为构造函数
+
+当一个函数用作构造函数时（使用new关键字），它的`this`被绑定到正在构造的新对象。
+
+虽然构造器返回的默认值是`this`所指的那个对象，但它仍可以手动返回其他的对象（如果返回值不是一个对象，则返回`this`对象）。
+
+```js
+function C(){
+  this.a = 37;
+}
+
+var o = new C();
+console.log(o.a); //  37
+function C2(){
+  this.a = 37;
+  return {a:38};
+}
+o = new C2();
+console.log(o.a); //  38，手动设置了返回对象
+
+```
+

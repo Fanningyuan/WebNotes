@@ -24,3 +24,47 @@
        }
    }
    ```
+
+# js中函数定义的几种方式
+
+1. function 函数名（参数列表） {
+
+}
+
+```js
+function add(a,b) {
+    var sum = a + b;
+    alert(sum);
+}
+add(3,5);
+```
+
+2. 匿名函数
+
+也就是不写函数名，将函数当作一个变量
+
+var test = function(参数列表) {
+
+//函数体
+
+}
+
+```js
+var add = function(a,b){
+    var sum = a + b;
+    alert(sum);
+}
+add(1,3);
+```
+
+3. 第三种方式，(使用的很少，一般作为了解)我们需要使用js中的内置对象，Function
+
+var add=new Function（"参数列表" ，"方法体和返回值"）;
+
+```js
+var add = new Function('x,y','var sum;sum = x+y;return sum;');
+alert(add(1,2));
+```
+
+# 构造函数和工厂函数
+
