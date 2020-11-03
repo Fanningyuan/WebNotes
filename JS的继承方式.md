@@ -40,7 +40,7 @@ let womanObj = new Woman();
 ```javascript
 function Woman(name){
     //继承了People
-    People.call(this);//People.call(this,'wangxiaoxia');
+   	People.call(this);//People.call(this,'wangxiaoxia');
     this.name = name || 'rendo'
 }
 let womanObj = new Woman();
